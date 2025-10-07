@@ -1,0 +1,27 @@
+from machine import Pin, PWM, ADC  
+# Importer les classes pour contrôler GPIO, PWM et ADC
+import time  # Importer le module time pour gérer les délais
+
+# CONFIGURATION DU PWM
+pwm_pin = PWM(Pin(15)) # Crée un objet PWM sur la pin 15 du Pico
+pwm_pin.freq(1000)  # Définir la fréquence du signal PWM à 1 kHz
+pwm_pin.duty_u16(32768) # Définir le cycle de service initial à 50%; duty_u16 prend une valeur entre 0 (0%) et 65535 (100%)
+
+# CONFIGURATION DE L'ADC
+
+adc_pin = ADC(Pin(26)) #Crée un objet ADC sur la pin 26 du Pico
+
+# BOUCLE PRINCIPALE
+ 
+try:
+    while True:
+        adc_value = adc_pin.read_u16()  # Lire la valeur brute de l’ADC(0 a 65535)
+        voltage = adc_value * 3.3 / 65535  #   Convertir la valeur ADC en tension en volts    
+        print("ADC:", adc_value, "Voltage:", round(voltage, 2), "V")  # Afficher la valeur brute et la tension correspondante.
+        time.sleep(1)   # Pause de 1 seconde avant la prochaine lecture
+except KeyboardInterrupt:
+    print("Arrêt du programme par l'utilisateur.")
+
+
+
+
