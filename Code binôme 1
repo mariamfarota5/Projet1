@@ -1,0 +1,28 @@
+from machine import Pin, PWM, UART, ADC
+import time
+ 
+MODE = "TX"  #a changer en "RX" sur le deuxième Pico
+ 
+# Configuration UART (TX sur GP8, RX sur GP9)
+uart = UART(1, baudrate=9600, tx=Pin(8), rx=Pin(9))
+ 
+# Configuration du PWM sur GP15
+pwm = PWM(Pin(15))
+pwm.freq(1000)
+ 
+# Configuration de l'ADC (utilisé seulement en mode TX)
+adc = ADC(Pin(26))  # GP26 = ADC0
+ 
+if MODE == "TX":
+    print("Mode ÉMETTEUR (TX)")
+    while True:
+        # Lire la valeur analogique du capteur/potentiomètre
+        adc_value = adc.read_u16()  # 0 à 65535
+        duty = adc_value // 256     # Convertir en valeur sur 8 bits (0–255)
+       
+        # Envoyer la valeur via UART
+        uart.write(bytes([duty]))
+       
+        # Afficher la valeur envoyée dans la console
+        print("Valeur ADC envoyee :", duty)
+        time.sleep(0.5)
