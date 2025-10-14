@@ -26,3 +26,17 @@ if MODE == "TX":
         # Afficher la valeur envoyée dans la console
         print("Valeur ADC envoyee :", duty)
         time.sleep(0.5)
+elif MODE == "RX":
+    print("Mode RÉCEPTEUR (RX)")
+    while True:
+        if uart.any():  # Si une donnée est reçue
+            data = uart.read(1)
+            if data is not None:
+                duty = int.from_bytes(data, 'little')
+               
+                # Ajuster le PWM selon la valeur reçue
+                pwm.duty_u16(duty * 256)
+               
+                # Afficher la valeur reçue dans la console
+                print("Valeur reçue :", duty)
+        time.sleep(0.1)
