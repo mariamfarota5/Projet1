@@ -1,4 +1,4 @@
-from machine import Pin, PWM, UART, ADC
+from machine import Pin, PWM, UART, I2C
 import time
  
 MODE = "TX"  #a changer en "RX" sur le deuxième Pico
@@ -38,9 +38,9 @@ def voltage_to_duty(voltage):
     """Convertit une tension (0–3.3V) en duty cycle (%)"""
     return min(max((voltage / 3.3) * 100, 0), 100)
 
-# Mode EMETTEUR
+# Mode EMETTEUR(TX)
 if MODE == "TX":
-    print("=== MODE EMETTEUR (TX) ===")
+    print(" MODE EMETTEUR (TX) ")
     while True:
         # Génère un duty cycle variant entre 0 et 100 %
         for duty_percent in range(0, 101, 10):
@@ -61,7 +61,7 @@ if MODE == "TX":
 
 # MODE RECEPTEUR (RX)
 elif MODE == "RX":
-    print("=== MODE RECEPTEUR (RX) ===")
+    print(" MODE RECEPTEUR (RX) ")
     while True:
         # Lecture tension filtrée via H8 (ADS1015)
         voltage = read_h8_voltage()
