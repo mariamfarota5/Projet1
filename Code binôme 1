@@ -13,7 +13,29 @@ pwm.freq(1000)
 # I2C pour ADS1015 (H8)
 i2c = I2C(1, scl=Pin(15), sda=Pin(14), freq=400000)
 ADS1015_ADDR = 0x48
- 
+
+
+def read_h8_voltage():
+    """Lit la tension sur le canal AIN2 de l'ADS1015 (entrée H8)."""
+    config = 0xE283  # AIN2, ±4.096V, single-shot
+    i2c.writeto_mem(ADS1015_ADDR, 0x01, config.to_bytes(2, 'big'))
+    time.sleep_ms(10)
+
+
+    data = i2c.readfrom_mem(ADS1015_ADDR, 0x00, 2)
+    raw = int.from_bytes(data, 'big') >> 4
+    if raw > 2047:
+        raw -= 4096
+
+
+    voltage = raw * 4.096 / 2048
+    return max(0, voltage)
+
+
+def voltage_to_duty(voltage):
+    """Convertit une tension (0–3.3V) en duty cycle (%)"""
+    return min(max((voltage / 3.3) * 100, 0), 100)
+
 if MODE == "TX":
     print("Mode ÉMETTEUR (TX)")
     while True:
