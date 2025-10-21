@@ -6,8 +6,8 @@ MODE = "TX"  #a changer en "RX" sur le deuxième Pico
 # Configuration UART (TX sur GP8, RX sur GP9)
 uart = UART(1, baudrate=9600, tx=Pin(8), rx=Pin(9))
  
-# Configuration du PWM sur GP15
-pwm = PWM(Pin(15))
+# Configuration du PWM sur GP14
+pwm = PWM(Pin(14))
 pwm.freq(1000)
  
 # Configuration de l'ADC (utilisé seulement en mode TX)
