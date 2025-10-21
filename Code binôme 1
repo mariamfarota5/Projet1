@@ -59,17 +59,28 @@ if MODE == "TX":
 
             time.sleep(1)
 
+# MODE RECEPTEUR (RX)
 elif MODE == "RX":
-    print("Mode RÉCEPTEUR (RX)")
+    print("=== MODE RECEPTEUR (RX) ===")
     while True:
-        if uart.any():  # Si une donnée est reçue
-            data = uart.read(1)
-            if data is not None:
-                duty = int.from_bytes(data, 'little')
-               
-                # Ajuster le PWM selon la valeur reçue
-                pwm.duty_u16(duty * 256)
-               
-                # Afficher la valeur reçue dans la console
-                print("Valeur reçue :", duty)
-        time.sleep(0.1)
+        # Lecture tension filtrée via H8 (ADS1015)
+        voltage = read_h8_voltage()
+        measured_duty = voltage_to_duty(voltage)
+
+
+        # Lecture du duty envoyé par UART
+        if uart.any():
+            line = uart.readline()
+            if line:
+                try:
+                    # Conversion sécurisée compatible MicroPython
+                    sent_duty = float(line.decode('utf-8').strip()) # type: ignore
+                    error = measured_duty - sent_duty
+                    print(f"Tension H8: {voltage:.2f} V | Duty mesure: {measured_duty:.1f}% | "
+                          f"Duty recu: {sent_duty:.1f}% | Erreur: {error:.1f}%")
+                except (ValueError, AttributeError):
+                    # Ignore les lignes mal formées ou types inattendus
+                    continue
+
+
+        time.sleep(0.5)
