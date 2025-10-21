@@ -38,19 +38,27 @@ def voltage_to_duty(voltage):
     """Convertit une tension (0–3.3V) en duty cycle (%)"""
     return min(max((voltage / 3.3) * 100, 0), 100)
 
+# Mode EMETTEUR
 if MODE == "TX":
-    print("Mode ÉMETTEUR (TX)")
+    print("=== MODE EMETTEUR (TX) ===")
     while True:
-        # Lire la valeur analogique du capteur/potentiomètre
-        adc_value = adc.read_u16()  # 0 à 65535
-        duty = adc_value // 256     # Convertir en valeur sur 8 bits (0–255)
-       
-        # Envoyer la valeur via UART
-        uart.write(bytes([duty]))
-       
-        # Afficher la valeur envoyée dans la console
-        print("Valeur ADC envoyee :", duty)
-        time.sleep(0.5)
+        # Génère un duty cycle variant entre 0 et 100 %
+        for duty_percent in range(0, 101, 10):
+            duty_u16 = int((duty_percent / 100) * 65535)
+            pwm.duty_u16(duty_u16)
+
+            # Envoi du duty cycle via UART (texte ASCII)
+            uart.write(f"{duty_percent}\n")
+            print(f"Valeur envoyee : {duty_percent:.1f}%")
+
+            # Lecture de la tension sur H8 pour calculer le duty réel
+            voltage = read_h8_voltage()
+            measured_duty = voltage_to_duty(voltage)
+            error = measured_duty - duty_percent
+            print(f"Tension H8: {voltage:.2f} V | Duty mesurer: {measured_duty:.1f}% | Erreur: {error:.1f}%")
+
+            time.sleep(1)
+
 elif MODE == "RX":
     print("Mode RÉCEPTEUR (RX)")
     while True:
