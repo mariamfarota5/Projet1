@@ -9,7 +9,10 @@ uart = UART(1, baudrate=9600, tx=Pin(8), rx=Pin(9))
 # Configuration du PWM sur GP14
 pwm = PWM(Pin(14))
 pwm.freq(1000)
- 
+
+# I2C pour ADS1015 (H8)
+i2c = I2C(1, scl=Pin(15), sda=Pin(14), freq=400000)
+ADS1015_ADDR = 0x48
  
 if MODE == "TX":
     print("Mode ÉMETTEUR (TX)")
