@@ -14,6 +14,8 @@ pwm.freq(1000)
 i2c = I2C(1, scl=Pin(15), sda=Pin(14), freq=400000)
 ADS1015_ADDR = 0x48
 
+# Cette section lit la tension analogique du connecteur H8 à l’aide du convertisseur ADS1015,
+# puis la convertit en un pourcentage de rapport cyclique (duty cycle) correspondant.
 
 def read_h8_voltage():
     """Lit la tension sur le canal AIN2 de l'ADS1015 (entrée H8)."""
